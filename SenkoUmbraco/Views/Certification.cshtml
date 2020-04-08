@@ -1,0 +1,28 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+    Layout = "Master.cshtml";
+    var current = CurrentPage;
+}
+
+@* the fun starts here *@
+@Html.Partial("/Views/Partials/Layout/_Banner.cshtml")
+<div class="container">
+    <div class="wrap-920">
+        <h1 class="page-title">@current.Name</h1>
+        <div class="wrap-certification">
+            @foreach (var item in current.Children())
+            {
+                var thumb = Umbraco.TypedMedia(item.GetPropertyValue<int>("image"));
+                <div class="item">
+                    <div class="img">
+                        <img class="lazy" data-original="@thumb.Url" alt=""/>
+                    </div>
+                    <div class="content">
+                        <h1>@item.Name</h1>
+                        @item.GetPropertyValue("content")
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

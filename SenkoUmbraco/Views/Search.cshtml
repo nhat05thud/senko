@@ -1,0 +1,59 @@
+﻿@using SenkoUmbraco.ClassHelper
+@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+    Layout = "Master.cshtml";
+}
+<div class="container">
+    <h1 class="page-title">@Umbraco.GetDictionaryValue("TimKiem")</h1>
+    @{
+        var searchQuery = Request.QueryString["query"];
+
+        if (!string.IsNullOrEmpty(searchQuery))
+        {
+            var results = Umbraco.TypedSearch(searchQuery);
+            results = results.Where(x => Utils.ReplaceUnicodeString(x.Name.ToLower()).Equals(Utils.ReplaceUnicodeString(searchQuery.ToLower())));
+            <div class="searchresults wrapNews_Events">
+                <p style="margin-bottom: 15px;">@Umbraco.GetDictionaryValue("KetQuaTimKiem"): <strong>@searchQuery</strong></p>
+                <div class="grid-products row">
+                    @foreach (IPublishedContent item in results)
+                    {
+                        if (item.DocumentTypeAlias == "productCate")
+                        {
+                            foreach (var child in item.Children())
+                            {
+                                var thumb = Umbraco.TypedMedia(child.GetPropertyValue<int>("image"));
+                                <div class="item col-md-3 col-sm-6 col-xs-12">
+                                    <div class="wrap-item">
+                                        <a href="@child.Url">
+                                            <img class="lazy" data-original="@(thumb != null ? string.Format("{0}?anchor={1}&width={2}&height={3}&mode={4}&bgcolor={5}&slimmage={6}&rnd={7}", thumb.Url, "center", 255, 265,"boxpad","fff", true, child.UpdateDate.ToString("ddMMyyyhhmmss")) : "")" alt="" />
+                                            <div class="info">
+                                                <span class="title">@child.Parent.Name</span>
+                                                <span class="code">@child.Name</span>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>   
+                            }
+                        }
+                        if (item.DocumentTypeAlias == "productDetail")
+                        {
+                            var thumb = Umbraco.TypedMedia(item.GetPropertyValue<int>("image"));
+                            <div class="item col-md-3 col-sm-6 col-xs-12">
+                                <div class="wrap-item">
+                                    <a href="@item.Url">
+                                        <img class="lazy" data-original="@(thumb != null ? string.Format("{0}?anchor={1}&width={2}&height={3}&mode={4}&bgcolor={5}&slimmage={6}&rnd={7}", thumb.Url, "center", 255, 265,"boxpad","fff", true, item.UpdateDate.ToString("ddMMyyyhhmmss")) : "")" alt="" />
+                                        <div class="info">
+                                            <span class="title">@item.Parent.Name</span>
+                                            <span class="code">@item.Name</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>   
+                        }
+                    }
+                </div>
+            </div>
+        }
+    }
+</div>
+

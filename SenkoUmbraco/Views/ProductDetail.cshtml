@@ -1,0 +1,167 @@
+﻿@using System.Text.RegularExpressions
+@inherits UmbracoTemplatePage
+@{
+    Layout = "Master.cshtml";
+    var current = CurrentPage;
+    var culture = System.Globalization.CultureInfo.CurrentCulture;
+    var cultureUrl = "";
+    switch (culture.Name)
+    {
+        case "en-US":
+            cultureUrl = "/en";
+            break;
+        case "vi-VN":
+            cultureUrl = "/";
+            break;
+    }
+    var moreImages = (List<IPublishedContent>)current.GetPropertyValue<IEnumerable<IPublishedContent>>("moreImage");
+    var ortherColors = (List<IPublishedContent>)current.GetPropertyValue<IEnumerable<IPublishedContent>>("ortherColor");
+}
+@section headerShare{
+    @{
+        var content = (string)current.GetPropertyValue<string>("description");
+        var result = Regex.Replace(content, @"<[^>]*>", string.Empty);
+        if (result.Length > 160)
+        {
+            result = result.Substring(0, 150);
+        }
+        <meta name="description" content="@result" />
+        <meta property="og:description" itemprop="description" content='@result' />
+    }
+    <meta property="og:url" itemprop="url" content='@current.Url' />
+    <meta property="og:title" itemprop="headline" content='@(current.Name == "Vi" || current.Name == "En" ? "Senko" : current.Name )' />
+    <meta property="og:type" content="article" />
+    @{
+        var image = Umbraco.TypedMedia(current.GetPropertyValue<int>("image"));
+        image = image == null ? "/images/noImage.png" : string.Format("{0}?anchor={1}&width={2}&height={3}&mode={4}&bgcolor={5}&slimmage={6}&rnd={7}", image.Url, "center", 630, 380, "boxpad", "fff", true, current.UpdateDate.ToString("ddMMyyyhhmmss"));
+        <meta property="og:image" itemprop="thumbnailUrl" content="@image" />
+    }
+    <meta property="og:image:width" content='630' />
+    <meta property="og:image:height" content='380' />
+    <meta property="og:site_name" content='Senko' />
+}
+<div id="fb-root"></div>
+<script>
+    (function (d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) return;
+        js = d.createElement(s); js.id = id;
+        js.src = 'https://connect.facebook.net/vi_VN/sdk.js#xfbml=1&version=v2.12';
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));</script>
+<div class="container">
+    <div class="products-breadcrumb">
+        <a href="@cultureUrl"><i class="fa fa-home"></i></a> /
+        @foreach (var ancestor in Model.Content.Ancestors().Where(t => t.IsVisible()).OrderBy("level").Where("level > 1"))
+        {
+            if (ancestor.DocumentTypeAlias == "products")
+            {
+                <a href="javascript:void(0)">@ancestor.Name</a> <i class="fa fa-caret-right"></i>
+            }
+            else
+            {
+                <a href="@ancestor.Url">@ancestor.Name</a> <i class="fa fa-caret-right"></i>
+            }
+        }
+        <span>@Model.Content.Name</span>
+    </div>
+    <div class="product-info">
+        <div class="info-left">
+            @if (moreImages != null && moreImages.Any())
+            {
+                var firstImage = moreImages.First();
+                <div class="mainImage">
+                    <img class="lazy" data-original="@(firstImage != null ?  string.Format("{0}?anchor={1}&width={2}&height={3}&mode={4}&bgcolor={5}&slimmage={6}&rnd={7}", firstImage.Url, "center", 300, 380, "boxpad", "fff", true, current.UpdateDate.ToString("ddMMyyyhhmmss")) : "")" data-id="id_@(firstImage != null ? firstImage.Id : 0)" alt="">
+                </div>
+                <div class="moreImage owl-carousel">
+                    @foreach (var item in moreImages)
+                    {
+                        <div class="item">
+                            <img class="owl-lazy" data-src="@(string.Format("{0}?anchor={1}&width={2}&height={3}&mode={4}&bgcolor={5}&slimmage={6}&rnd={7}", item.Url, "center", 50, 63, "boxpad", "fff", true, current.UpdateDate.ToString("ddMMyyyhhmmss")))" data-large="@(string.Format("{0}?anchor={1}&width={2}&height={3}&mode={4}&bgcolor={5}&slimmage={6}&rnd={7}", item.Url, "center", 300, 380, "boxpad", "fff", true, current.UpdateDate.ToString("ddMMyyyhhmmss")))" data-id="id_@(item.Id)" alt="" />
+                        </div>
+                    }
+                </div>
+                <div style="display: none">
+                    <div class="moreImage owl-carousel">
+                        @foreach (var item in moreImages)
+                        {
+                            <a class="fancybox" href="@item.Url" id="id_@(item.Id)" data-fancybox-group="gallery" title=""></a>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="info-right">
+            <div class="product-name">
+                <h1>@current.Parent().Name</h1>
+                <div class="pull-right">
+                    <div class="fb-share-button btnShare-item" data-href="@current.Url" data-layout="button" data-size="small" data-mobile-iframe="false"><a target="_blank" href="@current.Url" class="fb-xfbml-parse-ignore">Chia sẻ</a></div>
+                    <!-- Đặt thẻ này vào phần đầu hoặc ngay trước thẻ đóng phần nội dung của bạn. -->
+                    <script src="https://apis.google.com/js/platform.js" async defer>
+                    {
+                        lang: @culture.Name
+                    }
+                    </script>
+                    <!-- Đặt thẻ này vào nơi bạn muốn nút chia sẻ kết xuất. -->
+                    <div class="g-plus btnShare-item" data-action="share" data-height="24" data-href="@current.Url"></div>
+                </div>
+            </div>
+            <div class="description">
+                @current.GetPropertyValue("description")
+            </div>
+        </div>
+    </div>
+    <div class="clr"></div>
+    <div class="tabs-info">
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#tab1" data-toggle="tab">@Umbraco.GetDictionaryValue("MoTaSanPham")</a></li>
+            <li><a href="#tab2" id="tabColors" data-toggle="tab">@Umbraco.GetDictionaryValue("MauSacKhac")</a></li>
+			<li><a href="#tab3" data-toggle="tab">@Umbraco.GetDictionaryValue("ThongSoKyThuat")</a></li>
+            @if(current.GetPropertyValue<bool>("hide") == false){<li><a href="#tab4" data-toggle="tab">@Umbraco.GetDictionaryValue("HuongDanLapDat")</a></li>}
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div class="tab-pane active" id="tab1">
+                <div class="content-product">
+                    @current.GetPropertyValue("moTa")
+                </div>
+            </div>
+            <div class="tab-pane" id="tab2">
+                <div class="content-product">
+                    <div class="grid-products row">
+                        @if (ortherColors != null && ortherColors.Any())
+                        {
+                            foreach (var item in ortherColors)
+                            {
+                                <div class="item col-md-3 col-sm-6 col-xs-12">
+                                    <div class="wrap-item">
+                                        <img class="imgLazy" data-src="@(string.Format("{0}?anchor={1}&width={2}&height={3}&mode={4}&bgcolor={5}&slimmage={6}&rnd={7}", item.Url, "center", 255, 265, "boxpad", "fff", true, current.UpdateDate.ToString("ddMMyyyhhmmss")))" alt="" />
+                                        <div class="info">
+                                            <span class="title">@current.Parent().Name</span>
+                                            <span class="code">@current.Name</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane" id="tab3">
+                <div class="content-product">
+                    @current.GetPropertyValue("thongSo")
+                </div>
+            </div>
+			@if(current.GetPropertyValue<bool>("hide") == false){
+				<div class="tab-pane" id="tab4">
+					<div class="content-product">
+						@current.GetPropertyValue("huongDan")
+					</div>
+				</div>
+			}
+        </div>
+    </div>
+</div>
+

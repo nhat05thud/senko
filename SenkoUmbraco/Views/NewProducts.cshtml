@@ -1,0 +1,36 @@
+﻿@inherits UmbracoTemplatePage
+@{
+    Layout = "Master.cshtml";
+    var current = CurrentPage;
+    var products = Model.Content.Site()
+        .FirstChild("products")
+        .Children("productCate");
+}
+@Html.Partial("/Views/Partials/Layout/_Banner.cshtml")
+<div class="container">
+    <h1 class="page-title">@current.Name</h1>
+    <div class="grid-products row">
+        @foreach (var item in products)
+        {
+            foreach (var child in item.Children())
+            {
+                if (child.GetPropertyValue<bool>("isNew"))
+                {
+                    var thumb = Umbraco.TypedMedia(child.GetPropertyValue<int>("image"));
+                    <div class="item col-md-3 col-sm-6 col-xs-12">
+                        <div class="wrap-item item-new">
+                            <a href="@child.Url">
+                                <img class="lazy" data-original="@(thumb != null ? string.Format("{0}?anchor={1}&width={2}&height={3}&mode={4}&bgcolor={5}&slimmage={6}&rnd={7:ddMMyyyhhmmss}", thumb.Url, "center", 255, 265,"boxpad","fff", true, child.UpdateDate) : "")" alt="" />
+                                <div class="info">
+                                    <span class="title">@item.Name</span>
+                                    <span class="code">@child.Name</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                }
+            }
+        }
+    </div>
+</div>
+<div class="clr"></div>

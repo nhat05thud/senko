@@ -1,0 +1,17 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+    var current = CurrentPage;
+    var banners = (List<IPublishedContent>)current.GetPropertyValue<IEnumerable<IPublishedContent>>("banner");
+}
+
+@if (banners != null)
+{
+    <div class="mainBanner owl-carousel">
+        @foreach (var banner in banners)
+        {
+            <div class="item">
+                <img class="owl-lazy addParamImage" data-src="@banner.Url" alt="@banner.Name"/>
+            </div>
+        }
+    </div>
+}

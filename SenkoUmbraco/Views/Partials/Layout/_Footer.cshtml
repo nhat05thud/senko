@@ -1,0 +1,48 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+    var home = CurrentPage.AncestorOrSelf(1);
+    var scFacebook = home.GetPropertyValue("scFacebook");
+    var scGoogleplus = home.GetPropertyValue("scGoogleplus");
+    var scYoutube = home.GetPropertyValue("scYoutube");
+}
+<div class="container">
+    <div class="pull-left">
+        <h1>VỀ CÔNG TY TNHH TÂN TIẾN SENKO</h1>
+        @if (home.Children.Any())
+        {
+            <ul>
+                @foreach (var childPage in home.Children())
+                {
+                    var page = (IPublishedContent)childPage;
+                    if (page.DocumentTypeAlias == "aboutUs"
+                        || page.DocumentTypeAlias == "recruitment"
+                        || page.DocumentTypeAlias == "guarantee"
+                        || page.DocumentTypeAlias == "certification"
+                        || page.DocumentTypeAlias == "chainStores"
+                        || page.DocumentTypeAlias == "contact"
+                        )
+                    {
+                        <li>
+                            <a href="@childPage.Url">@childPage.Name</a>
+                        </li>
+                    }
+                }
+            </ul>
+        }
+    </div>
+    <div class="pull-right">
+        <div class="text-right">
+            <span>Kết nối với chúng tôi</span>
+            <a href="@scFacebook">
+                <img src="/images/social1.png" alt="" />
+            </a>
+            <a href="@scGoogleplus">
+                <img src="/images/social2.png" alt="" />
+            </a>
+            <a href="@scYoutube">
+                <img src="/images/social3.png" alt="" />
+            </a>
+            <p>© 2018 TAN TIEN SENKO. All Right Reserved.</p>
+        </div>
+    </div>
+</div>

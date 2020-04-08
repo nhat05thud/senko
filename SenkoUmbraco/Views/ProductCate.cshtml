@@ -1,0 +1,16 @@
+﻿@inherits UmbracoTemplatePage
+@{
+	Layout = "Master.cshtml";
+    var current = CurrentPage;
+    var parent = current.Parent();
+}
+
+@* the fun starts here *@
+@Html.Partial("/Views/Partials/Layout/_Banner.cshtml")
+<div class="container">
+    <h1 class="page-title">@parent.Name</h1>
+    <h1 class="title-cate"><span>@current.Name</span></h1>
+    <div class="grid-products row">
+        @Html.Partial("~/Views/Partials/Products/_Sanpham.cshtml")
+    </div>
+</div>

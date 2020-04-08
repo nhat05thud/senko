@@ -1,0 +1,21 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+    Layout = "Master.cshtml";
+    var current = CurrentPage;
+}
+
+@* the fun starts here *@
+@Html.Partial("/Views/Partials/Layout/_Banner.cshtml")
+<div class="container">
+    <div class="wrap-920">
+        <h1 class="page-title">@current.Name</h1>
+        <div class="contact-info">
+            @current.GetPropertyValue("content")
+        </div>
+        <p>@current.GetPropertyValue("contactMessage")</p>
+        <div id="alertMessSuccess" class="hidden"></div>
+        <div class="form-contact">
+            @Html.Action("RenderContactForm", "Site")
+        </div>
+    </div>
+</div>

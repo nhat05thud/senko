@@ -1,0 +1,32 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+    Layout = "Master.cshtml";
+    var home = CurrentPage.AncestorOrSelf(1);
+}
+
+@* the fun starts here *@
+@Html.Partial("/Views/Partials/Layout/_Banner.cshtml")
+<div class="container">
+    <div class="main-category">
+        @if (home.Children.Any())
+        {
+            foreach (var childPage in home.Children())
+            {
+                var page = (IPublishedContent)childPage;
+                if (page.DocumentTypeAlias == "aboutUs"
+                    || page.DocumentTypeAlias == "recruitment"
+                    || page.DocumentTypeAlias == "guarantee"
+                    )
+                {
+                    var thumb = Umbraco.TypedMedia(childPage.GetPropertyValue<int>("imageCate"));
+                    <div class="item">
+                        <a href="@childPage.Url">
+                            <img src="@thumb.Url" alt="" />
+                            <p>@childPage.Name</p>
+                        </a>
+                    </div>
+                }
+            }
+        }
+    </div>
+</div>

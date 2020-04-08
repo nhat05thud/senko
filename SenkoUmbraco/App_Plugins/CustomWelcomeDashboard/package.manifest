@@ -1,0 +1,10 @@
+﻿{
+	javascript:
+    [
+		"~/App_Plugins/CustomWelcomeDashboard/customwelcomedashboard.controller.js"
+    ],
+	css:
+	[
+		"~/App_Plugins/CustomWelcomeDashboard/customwelcomedashboard.css"
+	]
+}
